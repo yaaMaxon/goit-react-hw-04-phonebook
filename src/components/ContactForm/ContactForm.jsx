@@ -1,55 +1,58 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { nanoid } from "nanoid";
 import css from './ContactForm.module.css';
 
-export class ContactForm extends Component {
-state = {
-  name: '',
-  number: '',
-}
+export const ContactForm = ({ handleAddInf }) => {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
 // Зміна значення в стейт
 
-handleInputChange = event => {
-// console.log(event.target.value)
-// console.log(event.target.name)
-this.setState({
-  [event.target.name]: event.target.value,
-})
+const handleInputChange = event => {
+
+const { name, value} = event.target;
+
+switch (name) {
+  case 'name':
+    setName(value)
+    break;
+
+  case 'number':
+    setNumber(value)
+    break;
+
+  default:
+    break;
+}
 }
 
 // Отримуємо контакти
 
-handleSubmit = event => {
+const handleSubmit = event => {
   event.preventDefault();
 
 const contactData = {
-  name: this.state.name,
-  number: this.state.number,
-  // ...this.state,
+  name: name,
+  number: number,
   id: nanoid(),
 }
 
-  this.props.handleAddInf(contactData);
-
-  this.setState({
-    name: '',
-    number: '',
-  })
+handleAddInf(contactData);
+setName('');
+setNumber('');
 }
 
-  render() {
     return (
       <form 
       className={css.form}
-      onSubmit={this.handleSubmit}>
+      onSubmit={handleSubmit}>
           <label
           className={css.label}
           >
             <span>Name</span>
         <input 
-        onChange={this.handleInputChange} 
-        value={this.state.name} 
+        onChange={handleInputChange} 
+        value={name} 
         type="text" 
         name="name" 
         required />
@@ -59,8 +62,8 @@ const contactData = {
           >
             <span>Number</span>
         <input 
-        onChange={this.handleInputChange} 
-        value={this.state.number} 
+        onChange={handleInputChange} 
+        value={number} 
         type="tel" 
         name="number" 
         required />
@@ -72,5 +75,4 @@ const contactData = {
             </button>
         </form>
     )
-  }
 }

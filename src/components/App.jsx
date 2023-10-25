@@ -1,37 +1,32 @@
-import { Component } from "react";
+import { useState } from "react";
 import { ContactForm } from "./ContactForm/ContactForm";
 import { Filter } from "./Filter/Filter";
 import { ContactList } from "./ContactList/ContactList";
+import { useEffect } from "react";
 
-export class App extends Component {
-state = {
-  contacts: [],
-  filter: '',
-}
+export const App = () => {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState('');
 
-componentDidMount() {
+
+useEffect(() => {
   const stringifiedContacts = localStorage.getItem('contact');
   const parsedContacts = JSON.parse(stringifiedContacts) ?? [];
-  this.setState({
-    contacts: parsedContacts,
-  })
-}
+
+  setContacts(parsedContacts);
+}, [])
 
 
-componentDidUpdate(_, prevState) {
+useEffect(() => {
+  const stringifiedContacts = JSON.stringify(contacts)
+  localStorage.setItem('contact', stringifiedContacts);
+}, [contacts])
 
-  if(this.state.contacts.length !== prevState.contacts.length) {
-const stringifiedContacts = JSON.stringify(this.state.contacts)
-localStorage.setItem('contact', stringifiedContacts);
-  }
-
-}
 
 // Додавання контактів
-handleAddInf = contact => {
-// console.log('element:', contact);
+const handleAddInf = contact => {
 
-const isContactDuplicate = this.state.contacts.some(user => 
+const isContactDuplicate = contacts.some(user => 
   user.name.toLowerCase() === contact.name.toLowerCase());
 
 if(isContactDuplicate){
@@ -39,35 +34,21 @@ if(isContactDuplicate){
   return;
 }
 
-this.setState(prevState => {
-  return {
-    contacts: [contact, ...prevState.contacts],
-  }
-});
-
+setContacts([contact, ...contacts])
 }
 
-handleChange = event => {
-this.setState({
-  filter: event.target.value,
-})
+
+const handleChange = event => {
+  setFilter(event.target.value)
 }
 
-onDelete = contactId => {
-// console.log('contactId:', contactId)
 
-this.setState(prevState => {
-  return {
-    contacts: prevState.contacts.filter(contact => 
-      contact.id !== contactId)
-  }
-})
+const onDelete = contactId => {
+  setContacts(contacts.filter(contact => contact.id !== contactId))
 }
 
-  render() {
-    const {contacts, filter} = this.state;
-    const filteredContacts = contacts.filter( contact =>  
-      contact.name.toLowerCase().includes(filter.toLowerCase()));
+const filteredContacts = contacts.filter( contact =>  
+  contact.name.toLowerCase().includes(filter.toLowerCase()));
 
     return (
       <div
@@ -89,7 +70,7 @@ this.setState(prevState => {
           }}>
             Phonebook
             </h1>
-        <ContactForm handleAddInf={this.handleAddInf}/>
+        <ContactForm handleAddInf={handleAddInf}/>
         <h2 
         style={{
             fontSize: "32px",
@@ -99,9 +80,8 @@ this.setState(prevState => {
           }}>
           Contacts
           </h2>
-        <Filter filter={filter} handleChange={this.handleChange}/>
-        <ContactList contacts={filteredContacts} onDelete={this.onDelete}/>
+        <Filter filter={filter} handleChange={handleChange}/>
+        <ContactList contacts={filteredContacts} onDelete={onDelete}/>
       </div>
     );
-      }
 };

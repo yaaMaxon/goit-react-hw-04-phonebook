@@ -1,9 +1,6 @@
-import React, { Component } from 'react';
 import css from './Filter.module.css';
 
-export class Filter extends Component {
-  render() {
-    const {filter, handleChange} = this.props;
+export const Filter = ({filter, handleChange}) => {
     return (
       <label
       className={css.label}>
@@ -19,5 +16,4 @@ export class Filter extends Component {
             name="filter" />
           </label>
     )
-  }
 }
